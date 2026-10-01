@@ -1,22 +1,31 @@
 const prompt = require("readline-sync");
 
-//Title of Game: Mind Games// 
-
-//Welcome player(s)// 
-
+const pointsPerCorrectAnswer = 10;
+const scoreArray = [];
 
 console.log("Welcome to Mind Games!");
 
-//choose single player or multiplayer//
-let gameMode = prompt.question("Choose game mode: Single Player or Multiplayer? ");
+let gameMode = prompt.question("Choose game mode: Single Player or Multiplayer? ").trim();
+console.log("Excellent! Let's get started!");
 
-console.log("Excelnodlent! Let's get started!");
-
-const name = prompt.question("Please enter your name(s): ");
+const name = prompt.question("Please enter your name(s): ").trim();
 console.log("Hello " + name + "! Let's begin the game!");
 
 const topic = prompt.question("Choose a topic: The Arts, Astronomy, Cuisine, or Geography? ").trim().toLowerCase();
 
+function askQuestion(question, options, answer) {
+  console.log(question);
+  options.forEach((option) => console.log(option));
+
+  const userAnswer = prompt.question("Your answer: ").trim().toUpperCase();
+
+  if (userAnswer === answer) {
+    scoreArray.push(pointsPerCorrectAnswer);
+    console.log(`Correct! +${pointsPerCorrectAnswer} points.`);
+  } else {
+    console.log("Incorrect. The correct answer is " + answer + ".");
+  }
+}
 
 const astronomyQuestions = [
   {
@@ -179,10 +188,20 @@ const cuisineQuestions = [
     question: "What is the main ingredient in traditional hummus?",
     options: ["A) Chickpeas", "B) Black beans", "C) Lentils", "D) Soybeans"],
     answer: "A"
+  },
+  {
+    question: "Which spice is the most expensive in the world by weight?",
+    options: ["A) Saffron", "B) Vanilla", "C) Cardamom", "D) Cinnamon"],
+    answer: "A"
   }
 ];
 
 const geographyQuestions = [
+  {
+    question: "What is the capital city of Australia?",
+    options: ["A) Sydney", "B) Melbourne", "C) Canberra", "D) Brisbane"],
+    answer: "C"
+  },
   {
     question: "What is the longest river in the world?",
     options: ["A) Amazon River", "B) Nile River", "C) Yangtze River", "D) Mississippi River"],
@@ -191,6 +210,11 @@ const geographyQuestions = [
   {
     question: "Which desert is the largest hot desert on Earth?",
     options: ["A) Gobi Desert", "B) Sahara Desert", "C) Arabian Desert", "D) Kalahari Desert"],
+    answer: "B"
+  },
+  {
+    question: "Mount Everest sits on the border of which two countries?",
+    options: ["A) India and Nepal", "B) China and Nepal", "C) Bhutan and China", "D) Pakistan and India"],
     answer: "B"
   }
 ];
@@ -214,5 +238,7 @@ selectedQuestions.forEach(({ question, options, answer }) => {
   askQuestion(question, options, answer);
 });
 
+const totalScore = scoreArray.reduce((sum, value) => sum + value, 0);
+console.log("Your total score is " + totalScore + " points.");
 console.log("Thanks for playing Mind Games!");
-   
+
