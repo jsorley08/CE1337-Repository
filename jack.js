@@ -10,6 +10,9 @@ let playerAmount = 0;
 
 // required csvToArray call, will find more efficient method later //
 
+
+
+
 csvToArray(highscores)
 
 // Function Area
