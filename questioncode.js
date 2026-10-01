@@ -1,6 +1,9 @@
 const prompt = require("readline-sync");
+const fs = require("fs");
+
 //Variable Setup//
 nameArray = []
+let highscores = [];
 
 //Title of Game: Mind Games// 
 
@@ -9,24 +12,161 @@ nameArray = []
 
 console.log("Welcome to Mind Games!");
 
-//choose single player or multiplayer//
-let gameMode = prompt.question("Choose game mode: Single Player or Multiplayer?\n" + "To select please type S for Singleplayer or M for Multiplayer ");
-console.log("Excellent! Let's get started!");
+console.log("\nPlay (1)\nLeaderboard (2)");
+let startOption = prompt.question(": ");
+while(startOption != "1" && startOption != "2"){
+    startOption = prompt.question("Please choose a valid option: \nPlay(1)\nLeaderboard(2)\n: ");
+};
 
-if (gameMode.toLowerCase()== "m") {
-    let playerAmount = prompt.question("How many people are you playing with?");
-    playerAmount = Number(playerAmount);
-    nameArray.length = playerAmount;
-    for(loop = 0; loop < playerAmount; loop++){
-        nameArray[loop] = prompt.question("Please enter player" + (loop+1)  +"'s name ");
+if(startOption === "1"){
+    playGame()
+}
+if (startOption === "2") {
+    csvToArray(highscores);
+    displayLeaderboard(highscores);
+}
+
+
+
+//choose single player or multiplayer//
+
+function playGame() {
+    let gameMode = prompt.question("Choose game mode: Single Player or Multiplayer?\n" + "To select please type S for Singleplayer or M for Multiplayer: ");
+    console.log("Excellent! Let's get started!");
+
+    if (gameMode.toLowerCase()== "m") {
+        let playerAmount = prompt.question("How many people are you playing with?");
+        playerAmount = Number(playerAmount);
+        nameArray.length = playerAmount;
+        for(loop = 0; loop < playerAmount; loop++){
+            nameArray[loop] = prompt.question("Please enter player" + (loop+1)  +"'s name ");
+        }
+        console.log("Hello everyone!\n" + "Let's begin the game!");
+        
     }
-    console.log("Hello everyone!\n" + "Let's begin the game!");
+    else{
+        nameArray[0] = prompt.question("What is your name? ")
+        console.log("Hello " + nameArray[0] + "! Let's begin the game!");
+    }
+
+
+
+
+
+//Temporary Variables//
+    elapsed = 0
+    totelapsed = 0
+
+    // Turn Mechanic //
+    if (gameMode.toLowerCase() == "s") {
+        for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
+            let topic = prompt.question("Choose a topic: The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is  ");
+            console.log("You chose: " + topic)
+        }
+    }
+
+    if (gameMode.toLowerCase() == "m"){
+        let playerTurn = 0
+        for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
+            let start = Date.now();
+            let topic = prompt.question("Player " + (playerTurn+1) + " Choose a topic:  The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is  ");
+            playerTurn = playerTurn + 1
+            console.log(playerTurn);
+            if (playerTurn == nameArray.length) {
+                playerTurn = 0
+                console.log(playerTurn)
+            }
+            let end = Date.now();
+            elapsed = end - start;
+            elapsed = elapsed / 1000
+            totelapsed = elapsed + totelapsed
+            console.log(totelapsed);
+        }
+    }
+}
+
+
+
+// FUNCTIONS
+
+function csvToArray(highscores) {
     
+    const readFileLines = filename =>
+        fs.readFileSync(filename).toString("UTF8")
+
+    let csv = readFileLines("highscores.csv").trim();
+
+    var entry = csv.split("\n");
+
+    for(let i=0; i < (entry.length); i++) {
+
+       let username = entry[i].split(",")[0];
+       let score = Number(entry[i].split(",")[1]);
+
+       highscores[i] = new LeaderboardEntry(username, score);
+    }
 }
-else{
-    nameArray[0] = prompt.question("What is your name? ")
-    console.log("Hello " + nameArray[0] + "! Let's begin the game!");
+
+    // Write back to CSV //
+
+function writeToCSV(highscores) {
+    let content = ""
+    for(let i=0; i < highscores.length; i++){
+        content += highscores[i].username+ "," +highscores[i].score+ "\n"
+    }
+    
+    fs.writeFile("highscores.csv", content, err => {
+        if(err) {
+            console.error(err);
+        } else {
+            console.log("File written successfully.");
+        }
+    });
 }
+
+    //Create new LdrBoard entry //
+function LeaderboardEntry (username, score) {
+    this.username = username;
+    this.score = score;
+}
+
+    //display leaderboard, can be used at menu, or end of game //
+function displayLeaderboard(highscores) {
+    console.log("=== LEADERBOARD ===\n",
+                "¦Position¦    ¦Name¦    ¦Score¦ \n");
+    
+    for(let i=0; i < highscores.length; i++){
+        console.log(" " +(i+1)+ "      " +highscores[i].username+ "      " +highscores[i].score+ "\r\n");
+    };
+
+}
+
+    // Sort Leaderboard, updates before writing back to CSV //
+function sortLeaderboard(highscores) {
+
+    for(let i=1; i < highscores.length; i++) {
+        let key = highscores[i];
+        let j = i-1;
+
+        while (j >= 0 && highscores[j].score < key.score) {
+            highscores[j+1] = highscores[j];
+            j = j - 1;
+        }
+        highscores[j+1] = key;
+    }
+    return highscores;
+}
+
+    // Currently adds all scores to leaderboard, will add check for score beaten (keeps file size slim) //
+function addToLeaderBoard(highscores, players, playerAmount) {
+    for(let i=0; i < playerAmount; i++) {
+
+        highscores.push(new LeaderboardEntry(players[i].name, players[i].score))
+    }
+
+}
+
+
 
 //topic questions//
 const artsQuestions = [
@@ -264,41 +404,3 @@ const GeographyQuestions = [
         answer: "Italy"
     }
 ];
-
-//Calculating Total Questions//
-questionAmount = 0
-questionAmount = CuisineQuestions.length + SpaceAndAstronomyQuestions.length + GeographyQuestions.length + artsQuestions.length;
-console.log(questionAmount);
-
-
-
-//Temporary Variables//
-elapsed = 0
-totelapsed = 0
-
-// Turn Mechanic //
-if (gameMode.toLowerCase() == "s") {
-    for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
-        let topic = prompt.question("Choose a topic: The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is  ");
-        console.log("You chose: " + topic)
-    }
-}
-
-if (gameMode.toLowerCase() == "m"){
-    let playerTurn = 0
-    for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
-        let start = Date.now();
-        let topic = prompt.question("Player " + (playerTurn+1) + " Choose a topic:  The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is  ");
-        playerTurn = playerTurn + 1
-        console.log(playerTurn);
-        if (playerTurn == nameArray.length) {
-            playerTurn = 0
-            console.log(playerTurn)
-        }
-        let end = Date.now();
-        elapsed = end - start;
-        elapsed = elapsed / 1000
-        totelapsed = elapsed + totelapsed
-        console.log(totelapsed);
-    }
-}
