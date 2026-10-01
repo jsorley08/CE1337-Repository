@@ -11,22 +11,30 @@ let highscores = [];
 
 
 console.log("Welcome to Mind Games!");
+mainMenu();
+function mainMenu() {
+    let startOption = ""
+    console.log("\nPlay (1)\nLeaderboard (2)");
+    startOption = prompt.question(": ")
+    while(startOption != "1" && startOption != "2"){
+        startOption = prompt.question("Please choose a valid option: \nPlay(1)\nLeaderboard(2)\n: ");
+    };
 
-console.log("\nPlay (1)\nLeaderboard (2)");
-let startOption = prompt.question(": ");
-while(startOption != "1" && startOption != "2"){
-    startOption = prompt.question("Please choose a valid option: \nPlay(1)\nLeaderboard(2)\n: ");
-};
-
-if(startOption === "1"){
-    playGame()
+    if(startOption === "1"){
+        playGame()
+    }
+    if (startOption === "2") {
+        csvToArray(highscores);
+        displayLeaderboard(highscores);
+        startOption = prompt.question("Back(3)\n: ");
+        while(startOption != "3") {
+            startOption = prompt.question("Invalid.\nBack(3)\n: ");
+        }
+        if (startOption == "3") {
+            mainMenu();
+        }
+    }
 }
-if (startOption === "2") {
-    csvToArray(highscores);
-    displayLeaderboard(highscores);
-}
-
-
 
 //choose single player or multiplayer//
 
@@ -84,8 +92,6 @@ function playGame() {
         }
     }
 }
-
-
 
 // FUNCTIONS
 
