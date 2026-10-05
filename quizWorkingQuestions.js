@@ -321,25 +321,24 @@ function mainMenu() {
 //choose single player or multiplayer//
 
 function playGame() {
-    let gameMode = prompt.question("Choose game mode: Single Player or Multiplayer?\n" + "To select please type S for Singleplayer or M for Multiplayer: ");
-    console.log("Excellent! Let's get started!");
+    let gameMode = prompt.question("----------\nChoose game mode: Single Player or Multiplayer?\n" + "To select please type S for Singleplayer or M for Multiplayer:  ");
+    console.log("----------\nExcellent! Let's get started!");
 
     if (gameMode.toLowerCase()== "m") {
-        let playerAmount = prompt.question("How many people are you playing with?");
+        let playerAmount = prompt.question("How many people are you playing with?:  ");
         playerAmount = Number(playerAmount);
-        players.length = playerAmount;
+        console.log("----------")
         for(loop = 0; loop < playerAmount; loop++){
-            let playerName = prompt.question("Please enter player" + (loop+1)  +"'s name ");
+            let playerName = prompt.question("Please enter player" + (loop+1)  +"'s name:  ");
             players[loop] = new Player(playerName);
         }
-        console.log(players)
-        console.log("Hello everyone!\n" + "Let's begin the game!");
+        console.log("----------\nHello everyone!\n" + "Let's begin the game!");
         
     }
     else{
-        let playerName = prompt.question("What is your name? ")
+        let playerName = prompt.question("What is your name?:  ")
         players[0] = new Player(playerName);
-        console.log("Hello " + players[0].name + "! Let's begin the game!");
+        console.log("----------\nHello " + players[0].name + "! Let's begin the game!");
     }
 
 //Temporary Variables//
@@ -356,14 +355,14 @@ function playGame() {
         questionAmount = Math.floor(questionAmount);
 
         while(isNaN(questionAmount) || (questionAmount < 1 || questionAmount > 40)) {
-            questionAmount = prompt.question("Invalid Input. Please enter a number between 1-40:  ");
+            questionAmount = prompt.question("----------\nInvalid Input. Please enter a number between 1-40:  ");
             questionAmount = Math.floor(questionAmount)
         }
-        for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
+        for(let loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
             let start = Date.now();
             switch (true) { 
                 case (totelapsed >= 60 && bonus1 == false):
-                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + "please pick a bonus question\n" + "1. Bonus1\n" + "2. Bonus2\n" + "3. Charles\n" + "Enter your answer here: ");
+                    bonusAnswer = prompt.question("----------\nIts time for the BONUS ROUND\n" + "please pick a bonus question\n" + "1. Bonus1\n" + "2. Bonus2\n" + "3. Charles\n" + "Enter your answer here: ");
                     bonus1 = true;
                     bonus2 = false;
                     tottotelapsed = totelapsed;
@@ -381,78 +380,168 @@ function playGame() {
                     console.log("Hi2");
                     break;
                 }
-            let topic = prompt.question("Choose a topic: The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is:  ");
+            let topic = prompt.question("----------\nChoose a topic: The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is:  ");
 
             while(topic !== "astronomy" && topic !== "the arts" && topic !== "arts" && topic !== "cuisine" && topic !== "geography") {
-                topic = prompt.question("Invalid Input. Please select from either: 'The Arts', 'Astronomy', 'Cuisine', 'Geography':  ");
+                topic = prompt.question("----------\nInvalid Input. Please select from either: 'The Arts', 'Astronomy', 'Cuisine', 'Geography':  ");
             }
-            console.log("You chose: " + topic)
+            console.log("----------\n(You chose " +topic+")\n")
             let questionChoice = prompt.question("What question from 1-10 do you want?:  ");
             questionChoice = Math.floor(questionChoice);
             while((questionChoice < 1 || questionChoice > 10) || isNaN(questionChoice)) {
-                questionChoice = prompt.question("Invalid Input. Please choose a number between 1-10:  ");
+                questionChoice = prompt.question("----------\nInvalid Input. Please choose a number between 1-10:  ");
                 questionChoice = Math.floor(questionChoice);
             }
-            console.log("You chose question " + questionChoice);
+            console.log("----------\n(You chose question " + questionChoice+")\n");
             questionPicker(astronomyQuestions, artQuestions, CuisineQuestions, GeographyQuestions, topic, questionChoice);
             console.log(specificSelect.question);
-            for(i=0; i < specificSelect.options.length; i++) {
+            for(let i=0; i < specificSelect.options.length; i++) {
                 console.log(specificSelect.options[i]);
             }
             userAnswer = prompt.question(":  ");
+            if(userAnswer.toLowerCase() === specificSelect.answer ) {
+                players[0].points += 10;
+            }
+            else {
+                console.log("----------\nIncorrect. The answer was " +specificSelect.answer.toUpperCase()+".");
+            }
 
             let end = Date.now();
             elapsed = end - start;
             elapsed = elapsed / 1000
             totelapsed = elapsed + totelapsed
-            console.log(totelapsed);
+        }
+        console.log("----------\n"+players[0].name+"..."+players[0].points+" points");
+        console.log("\nYou scored "+players[0].points+" points!");
+
+        csvToArray(highscores);
+        addToLeaderBoard(highscores, players);
+        sortLeaderboard(highscores);
+        writeToCSV(highscores);
+
+        let cursor = ""
+        console.log("\nView Leaderboard? (1)\nEnd (2)");
+        cursor = prompt.question(": ")
+        while(cursor != "1" && cursor != "2"){
+            cursor = prompt.question("Please choose a valid option: \nView Leaderboard (1)\nEnd (2):  ");
+        };
+
+    
+        if(cursor === "1"){
+            displayLeaderboard(highscores);
+        }
+
+        if(cursor === "2") {
+            return;
         }
     }
-
     if (gameMode.toLowerCase() == "m"){
-        let playerTurn = 0
-        let questionAmount = prompt.question("How many questions do you want?:  ");
+        let questionAmount = prompt.question("----------\nHow many questions do you want?:  ");
         questionAmount = Math.floor(questionAmount);
 
         while(isNaN(questionAmount) || (questionAmount < 1 || questionAmount > 40)) {
-            questionAmount = prompt.question("Invalid Input. Please enter a number between 1-40:  ");
+            questionAmount = prompt.question("----------\nInvalid Input. Please enter a number between 1-40:  ");
             questionAmount = Math.floor(questionAmount)
         }
 
-        for(loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
+        for(let loopQuestion = 0; loopQuestion < questionAmount; loopQuestion++){
             let start = Date.now();
             switch (true) { 
-                case (totelapsed >= 60 && bonus1 == false):
-                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + "please pick a bonus question\n" + "1. Bonus1\n" + "2. Bonus2\n" + "3. Charles\n" + "Enter your answer here: ");
+                case (totelapsed >= 45 && bonus1 == false):
+                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + bonusQuestions[0].question + "\n" + bonusQuestions[0].options[0]  + "\n" + bonusQuestions[0].options[1] + "\n" + bonusQuestions[0].options[2] + "\n" + bonusQuestions[0].options[3] + " ");
                     bonus1 = true;
                     bonus2 = false;
                     tottotelapsed = totelapsed;
                     totelapsed = 0
                     break;
-                case (totelapsed >= 120 && bonus2 == false):
+                case (totelapsed >= 60 && bonus2 == false):
                     bonus2 = true;
                     bonus3 = false;
-                    console.log("Hi1");
+                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + bonusQuestions[1].question + "\n" + bonusQuestions[1].options[0] + "\n" + bonusQuestions[1].options[1] + "\n" + bonusQuestions[1].options[2] + "\n" + bonusQuestions[1].options[3] + " ");
                     tottotelapsed = tottotelapsed + totelapsed;
                     totelapsed = 0
                     break;
-                case (totelapsed >= 60 && bonus3 == false):
+                case (totelapsed >= 30 && bonus3 == false):
                     bonus3 = true;
-                    console.log("Hi2");
+                    bonus4 = false;
+                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + bonusQuestions[2].question + "\n" + bonusQuestions[2].options[0] + "\n" + bonusQuestions[2].options[1] + "\n" + bonusQuestions[2].options[2] + "\n" + bonusQuestions[2].options[3] + " ");
+                    break;
+                case (totelapsed >= 40 && bonus4 == false):
+                    bonus4 = true;
+                    bonusAnswer = prompt.question("Its time for the BONUS ROUND\n" + bonusQuestions[3].question + "\n" + bonusQuestions[3].options[0] + "\n" + bonusQuestions[3].options[1] + "\n" + bonusQuestions[3].options[2] + "\n" + bonusQuestions[3].options[3] + " ");
                     break;
                 }
-            let topic = prompt.question("Player " + (playerTurn+1) + " Choose a topic:  The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is:  ");
-            playerTurn = playerTurn + 1
-            console.log(playerTurn);
-            if (playerTurn == players.length) {
-                playerTurn = 0
-                console.log(playerTurn)
+
+            for(let i=0; i < players.length; i++) {
+                let topic = prompt.question("----------\nPlayer " + (i+1) + " Choose a topic:  The Arts, Space and Astronomy, Cuisine, or Geography? \n" + "Please type the category name as is:  ");
+
+
+                while(topic !== "astronomy" && topic !== "the arts" && topic !== "arts" && topic !== "cuisine" && topic !== "geography") {
+                    topic = prompt.question("----------\nInvalid Input. Please select from either: 'The Arts', 'Astronomy', 'Cuisine', 'Geography':  ");
+                }
+
+                console.log("----------\n(You chose " +topic+")\n")
+
+                let questionChoice = prompt.question("What question from 1-10 do you want?:  ");
+                questionChoice = Math.floor(questionChoice);
+
+                while((questionChoice < 1 || questionChoice > 10) || isNaN(questionChoice)) {
+                    questionChoice = prompt.question("----------\nInvalid Input. Please choose a number between 1-10:  ");
+                    questionChoice = Math.floor(questionChoice);
+                }
+
+                console.log("(You chose question " + questionChoice+")\n");
+
+                questionPicker(astronomyQuestions, artQuestions, CuisineQuestions, GeographyQuestions, topic, questionChoice);
+                console.log(specificSelect.question);
+                for(let i=0; i < specificSelect.options.length; i++) {
+                    console.log(specificSelect.options[i]);
+                }
+
+                userAnswer = prompt.question(":  ");
+                if(userAnswer.toLowerCase() === specificSelect.answer ) {
+                    console.log("\nCorrect!");
+                    players[i].points = players[i].points + 10;
+                }
+                else {
+                    console.log("----------\nIncorrect. The answer was " +specificSelect.answer.toUpperCase()+".");
+                }
             }
+
             let end = Date.now();
             elapsed = end - start;
             elapsed = elapsed / 1000
             totelapsed = elapsed + totelapsed
-            console.log(totelapsed);
+        }
+        max = players[0]
+        console.log("----------\n");
+        for(let i=0; i < players.length; i++) {
+            console.log(players[i].name+"..."+players[i].points+" points");
+            if(players[i].points > max.score) {
+                max = players[i]
+            }
+        }
+        console.log("\nThe winner is... "+max.name+"! You scored "+max.points+" points!");
+
+        csvToArray(highscores);
+        addToLeaderBoard(highscores, players);
+        sortLeaderboard(highscores);
+        writeToCSV(highscores);
+
+        let cursor = ""
+        console.log("\nView Leaderboard? (1)\nEnd (2)");
+        cursor = prompt.question(": ")
+        while(cursor != "1" && cursor != "2"){
+            cursor = prompt.question("Please choose a valid option: \nView Leaderboard (1)\nEnd (2):  ");
+        };
+
+    
+        if(cursor === "1"){
+            displayLeaderboard(highscores);
+        }
+
+        if(cursor === "2") {
+            return;
         }
     }
 }
@@ -485,7 +574,7 @@ function writeToCSV(highscores) {
         content += highscores[i].username+ "," +highscores[i].score+ "\n"
     }
     
-    fs.writeFile("highscores.csv", content, err => {
+    fs.writeFileSync("highscores.csv", content, err => {
         if(err) {
             console.error(err);
         } else {
@@ -496,7 +585,7 @@ function writeToCSV(highscores) {
 
 function Player (playerName) {
     this.name = playerName;
-    this.score = 0;
+    this.points = 0;
 }
 
     //Create new LdrBoard entry //
@@ -508,10 +597,10 @@ function LeaderboardEntry (username, score) {
     //display leaderboard, can be used at menu, or end of game //
 function displayLeaderboard(highscores) {
     console.log("=== LEADERBOARD ===\n",
-                "¦Position¦    ¦Name¦    ¦Score¦ \n");
+                "¦Position¦ ¦Name¦ ¦Score¦\n");
     
-    for(let i=0; i < highscores.length; i++){
-        console.log(" " +(i+1)+ "      " +highscores[i].username+ "      " +highscores[i].score+ "\r\n");
+    for(let i=0; i < Math.min(10, highscores.length); i++){
+        console.log((i+1)+ ". " +highscores[i].username+ " (" +highscores[i].score+ " points)\n");
     };
 
 }
@@ -533,10 +622,9 @@ function sortLeaderboard(highscores) {
 }
 
     // Currently adds all scores to leaderboard, will add check for score beaten (keeps file size slim) //
-function addToLeaderBoard(highscores, players, playerAmount) {
-    for(let i=0; i < playerAmount; i++) {
-
-        highscores.push(new LeaderboardEntry(players[i].name, players[i].score))
+function addToLeaderBoard(highscores, players) {
+    for(let i=0; i < players.length; i++) {
+        highscores.push(new LeaderboardEntry(players[i].name, players[i].points))
     }
 
 }
@@ -565,5 +653,5 @@ function questionPicker(space, art, food, world, userTopic, userSpecific){
     selectedQuestions = space;
     specificSelect = selectedQuestions[userSpecific]
     }
-    return specificSelect
+    return specificSelect;
 }
